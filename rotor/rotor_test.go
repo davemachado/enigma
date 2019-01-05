@@ -12,3 +12,11 @@ func TestGetContact(t *testing.T) {
 		}
 	}
 }
+
+func TestGetOutput(t *testing.T) {
+	rotors := GetRotors()[:3]
+	reflector := GetReflectors()[0]
+	if out := GetOutput(rotors, reflector, "X"); out != "F" {
+		t.Errorf("expected F, got %s", out)
+	}
+}

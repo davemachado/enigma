@@ -129,6 +129,22 @@ func (r *Rotor) Rotate() bool {
 	return false
 }
 
+func (r *Rotor) RotateBack() bool {
+	idx := len(r.Output) - 1
+	last := r.Output[idx]
+	for idx > 0 {
+		r.Output[idx] = r.Output[idx-1]
+		idx--
+	}
+	r.Output[0] = last
+	for _, l := range r.TurnoverLetter {
+		if r.Output[0] == l {
+			return true
+		}
+	}
+	return false
+}
+
 func Click(rotors []*Rotor) {
 	t := true
 	for _, r := range rotors {
@@ -138,15 +154,30 @@ func Click(rotors []*Rotor) {
 	}
 }
 
+func ClickBack(rotors []*Rotor) {
+	t := true
+	for _, r := range rotors {
+		if t {
+			t = r.RotateBack()
+		}
+	}
+}
+
 func GetOutput(rotors []*Rotor, reflector *Reflector, input string) string {
 	signal := input
 	for _, r := range rotors {
 		signal = r.GetContact(signal, false)
 	}
+	success := false
 	for i, l := range reflector.Input {
 		if l == signal {
+			success = true
 			signal = reflector.Output[i]
+			break
 		}
+	}
+	if !success {
+		panic("missed an output match")
 	}
 	for i := len(rotors) - 1; i >= 0; i-- {
 		signal = rotors[i].GetContact(signal, true)
